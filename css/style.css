@@ -1,0 +1,36 @@
+body {
+    background-color: #d1e4f2;
+}
+.navbar-brand {
+    font-weight: bold;
+}
+.product-card {
+    transition: transform 0.2s;
+}
+.product-card:hover {
+    transform: scale(1.05);
+}
+.hero-section {
+    background-color: #ffebcd;
+    padding: 50px 20px;
+    border-radius: 8px;
+}
+.tooltip-inner {
+    max-width: 200px;
+    text-align: left;
+}
+html {
+    scroll-behavior: smooth;
+}
+.gallery{
+    transition: transform 0.3s;
+}
+.gallery:hover {
+    transform: scale(1.05);
+}
+.button{
+    background-color: #28a745;
+    border-color: #28a745;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+}
