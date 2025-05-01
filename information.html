@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style1.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark"style="background-color: #28a745;">
+        <div class="container">
+            <ul class="navbar-nav d-flex align-items-center">
+                <li class="navbar-item">
+                    <img src="https://t4.ftcdn.net/jpg/02/67/29/93/360_F_267299376_Rwmrov0JGO5savkHry0J2ySMhlDd5bJN.jpg" class="rounded-pill" width="50px" alt="Logo">
+                </li>
+                <li class="navbar-item ms-3">
+                    <a class="navbar-brand fw-bold p-3" href="#">Grocery Management</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+<div class="container my-5">
+    <h2>Checkout</h2>
+    <form id="checkout-form">
+        <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="phone" pattern="^\d{10}$" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="address" class="form-label">Delivery Address</label>
+            <textarea class="form-control" id="address" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary button">Confirm Order</button>
+    </form>
+
+    <h3 class="mt-5">Order Summary</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="order-summary"></tbody>
+    </table>
+
+    <h4 id="gst-total" class="text-black fs-6">GST (18%): ₹0.00</h4>
+    <h4 id="delivery-charge" class="text-black fs-6">Delivery Charge (2%): ₹0.00</h4>
+    <h4 id="discount" class="text-black fs-6">Discount (3%): ₹0.00</h4>
+    <h3 id="final-total" class="text-black fs-1">Final Total: ₹0.00</h3>
+</div>
+
+<script>
+    // Fetch cart data from localStorage
+    let cart = JSON.parse(localStorage.getItem('checkout')) || [];
+
+    function calculateTotals() {
+        let totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let gst = totalAmount * 0.18;
+        let delivery = totalAmount * 0.02;
+        let discount = totalAmount * 0.03;
+        let finalTotal = totalAmount + gst + delivery - discount;
+
+        document.getElementById('gst-total').textContent = `GST (18%): ₹${gst.toFixed(2)}`;
+        document.getElementById('delivery-charge').textContent = `Delivery Charge (2%): ₹${delivery.toFixed(2)}`;
+        document.getElementById('discount').textContent = `Discount (3%): ₹${discount.toFixed(2)}`;
+        document.getElementById('final-total').textContent = `Final Total: ₹${finalTotal.toFixed(2)}`;
+
+        return { gst, delivery, discount, finalTotal };
+    }
+
+    function renderOrderSummary() {
+        if (!cart.length) {
+            document.getElementById('order-summary').innerHTML = `<tr><td colspan="4" class="text-center">Your cart is empty!</td></tr>`;
+            return;
+        }
+
+        document.getElementById('order-summary').innerHTML = cart.map(item => `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>₹${item.price.toFixed(2)}</td>
+                <td>₹${(item.price * item.quantity).toFixed(2)}</td>
+            </tr>`).join('');
+        
+        calculateTotals();
+    }
+
+    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        if (!cart.length) {
+            alert("Your cart is empty! Please add items before proceeding.");
+            return;
+        }
+
+        const orderId = "ORD" + Math.floor(Math.random() * 10000);
+        const { gst, delivery, discount, finalTotal } = calculateTotals();
+
+        const newOrder = {
+            id: orderId,
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value,
+            address: document.getElementById('address').value,
+            status: "Pending",
+            items: cart,
+            total: finalTotal.toFixed(2),
+            gst: gst.toFixed(2),
+            deliveryCharge: delivery.toFixed(2),
+            discount: discount.toFixed(2)
+        };
+
+        // Store the order in localStorage
+        let orders = JSON.parse(localStorage.getItem("orders")) || [];
+        orders.push(newOrder);
+        localStorage.setItem("orders", JSON.stringify(orders));
+
+        alert(`Order Confirmed! Your Order ID: ${orderId}`);
+
+        // Clear cart only after order is placed
+        localStorage.removeItem('checkout');
+        localStorage.removeItem("cart");
+        window.location.href = 'payment.html';
+    });
+
+    // Run function on page load to persist cart data
+    renderOrderSummary();
+</script>
+
+</body>
+</html>
