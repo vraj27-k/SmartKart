@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style1.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark  fixed-top"style="background-color: #28a745;">
+        <div class="container">
+            <ul class="navbar-nav">
+                <li class="navbar-item">
+                    <img src="https://t4.ftcdn.net/jpg/02/67/29/93/360_F_267299376_Rwmrov0JGO5savkHry0J2ySMhlDd5bJN.jpg" class="rounded-pill " width="50px">
+                </li>
+            </ul>
+            <a class="navbar-brand p-3 fw-bold" href="index.html">Smart Kart</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            Products
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="products.html">All products</a></li>
+                            <li><a class="dropdown-item" href="dairy.html">Dairy products</a></li>
+                            <li><a class="dropdown-item" href="fruit.html">Fruits products</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart.html">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="feedback.html">Feedback</a>
+                    </li>
+                    <li class="nav-item">
+                        <form class="d-flex" onsubmit="searchProducts(event)">
+                            <input class="form-control me-2" type="search" id="search-box" placeholder="Search"
+                                aria-label="Search">
+                            <button class="btn btn-outline-success" type="submit" id="search-button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5 " id="products">
+        <h2 class="mb-4 pt-5 text-black text-center fs-1">Our Products</h2>
+        <h2 class="pt-4">Vegetable Product</h2>
+        <div id="vegetable-product-list" class="row pt-2"></div>
+    </div>
+
+    <script>
+        const vegetables = [
+            { id: 1, name: "Potato", price: 20, image: "images/g-1.png" },
+            { id: 2, name: "Tomato", price: 25, image: "images/g-3.png" },
+            { id: 3, name: "Onion", price: 30, image: "images/g-2.png" },
+            { id: 4, name: "Cauliflower", price: 50, image: "images/g-4.png" },
+            { id: 5, name: "Palak", price: 40, image: "images/g-5.png" },
+            { id: 6, name: "Coriander", price: 10, image: "images/g-6.png" },
+            { id: 7, name: "Garlic", price: 60, image: "images/g-7.png", outOfStock: true },
+        ];
+
+        const allProducts = vegetables;
+
+        function addToCart(productId) {
+            let quantityInput = document.getElementById(`quantity-${productId}`);
+            let quantity = quantityInput ? Number(quantityInput.value) : 1;
+            
+            if (quantity < 1) return;
+        
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let product = allProducts.find(p => p.id === productId);
+            let existingItem = cart.find(item => item.id === productId);
+        
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ id: product.id, name: product.name, price: product.price, quantity });
+            }
+        
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert(`${product.name} added to cart!`);
+        }
+
+        function renderProducts(products, containerId) {
+            const productList = document.getElementById(containerId);
+            productList.innerHTML = ''; // Clear previous items
+
+            products.forEach(product => {
+                // Determine if it's a dairy product and adjust label accordingly
+                const unit = 'per kg';
+
+                productList.innerHTML += `
+                <div class="col-md-4">
+                    <div class="card product-card ${product.outOfStock ? 'out-of-stock' : ''}">
+                        <img src="${product.image}" class="card-img-top" alt="${product.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <p class="card-text">Price: ₹${product.price} <small>(${unit})</small></p>
+                            ${product.outOfStock ? '<p class="text-danger">Out of Stock</p>' : `
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <input type="number" id="quantity-${product.id}" value="1" min="1" class="form-control w-25">
+                                    <button class="btn btn-primary button" onclick="addToCart(${product.id}, document.getElementById('quantity-${product.id}').value)">Add to Cart</button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function searchProducts(event) {
+            event.preventDefault();  // Prevents the form from submitting and refreshing the page
+
+            const query = document.getElementById("search-box").value.toLowerCase();
+            const filteredVegetables = vegetables.filter(product => product.name.toLowerCase().includes(query));
+
+            // Render the filtered products in the vegetable section
+            renderProducts(filteredVegetables, "vegetable-product-list");
+
+            // If no products match the search query, display a "No results" message
+            if (filteredVegetables.length === 0) {
+                document.getElementById("vegetable-product-list").innerHTML = '<p>No vegetable products found.</p>';
+            }
+        }
+
+        // Render all vegetable products initially
+        renderProducts(vegetables, "vegetable-product-list");
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

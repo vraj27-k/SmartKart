@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style1.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark "style="background-color: #28a745;">
+        <div class="container">
+            <ul class="navbar-nav d-flex align-items-center">
+                <li class="navbar-item">
+                    <img src="https://t4.ftcdn.net/jpg/02/67/29/93/360_F_267299376_Rwmrov0JGO5savkHry0J2ySMhlDd5bJN.jpg" class="rounded-pill" width="50px" alt="Logo">
+                </li>
+                <li class="navbar-item ms-3">
+                    <a class="navbar-brand fw-bold p-3" href="#">Smart Kart</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <h2>Select Payment Method</h2>
+        <form id="payment-form">
+            <div class="mb-3">
+                <label for="payment-method" class="form-label">Payment Method</label>
+                <select class="form-select" id="payment-method" required>
+                    <option value="">Choose Payment Method</option>
+                    <option value="cash">Cash</option>
+                    <option value="debit-card">Debit Card</option>
+                    <option value="upi">UPI</option>
+                </select>
+            </div>
+
+            <!-- Debit Card Details -->
+            <div id="debit-card-details" class="payment-details" style="display:none;">
+                <div class="mb-3">
+                    <label for="card-number" class="form-label">Card Number</label>
+                    <input type="text" class="form-control" id="card-number" pattern="^\d{12}$" placeholder="Enter 12-digit card number">
+                </div>
+                <div class="mb-3">
+                    <label for="expiry-date" class="form-label">Expiry Date (MM/YY)</label>
+                    <input type="text" class="form-control" id="expiry-date" pattern="^\d{2}/\d{2}$" placeholder="MM/YY">
+                </div>
+                <div class="mb-3">
+                    <label for="cvv" class="form-label">CVV</label>
+                    <input type="text" class="form-control" id="cvv" pattern="^\d{3}$" placeholder="Enter 3-digit CVV">
+                </div>
+            </div>
+
+            <!-- UPI Details -->
+            <div id="upi-details" class="payment-details" style="display:none;">
+                <div class="mb-3">
+                    <label for="upi-id" class="form-label">UPI ID</label>
+                    <input type="text" class="form-control" id="upi-id" placeholder="Enter UPI ID">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary button" id="confirm-payment-btn" disabled>Confirm Payment</button>
+        </form>
+
+        <!-- Back & Home Buttons -->
+        <a href="information.html" class="btn btn-primary button mt-3">Back to Information</a>
+        <a href="index.html" class="btn btn-primary button mt-3">Go to Home</a>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const paymentMethodSelect = document.getElementById('payment-method');
+        const debitCardDetails = document.getElementById('debit-card-details');
+        const upiDetails = document.getElementById('upi-details');
+        const confirmPaymentButton = document.getElementById('confirm-payment-btn');
+
+        // Show/hide payment details based on selection
+        paymentMethodSelect.addEventListener('change', function() {
+            const selectedMethod = paymentMethodSelect.value;
+
+            // Hide all payment details initially
+            debitCardDetails.style.display = 'none';
+            upiDetails.style.display = 'none';
+
+            // Show relevant input fields
+            if (selectedMethod === 'debit-card') {
+                debitCardDetails.style.display = 'block';
+                confirmPaymentButton.disabled = false;
+            } else if (selectedMethod === 'upi') {
+                upiDetails.style.display = 'block';
+                confirmPaymentButton.disabled = false;
+            } else if (selectedMethod === 'cash') {
+                confirmPaymentButton.disabled = false; // Cash doesn't need extra details
+            } else {
+                confirmPaymentButton.disabled = true; // Disable button if no method is selected
+            }
+        });
+
+        // Handle payment form submission
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const paymentMethod = paymentMethodSelect.value;
+            let paymentDetails = '';
+
+            // Validate based on selected payment method
+            if (paymentMethod === 'debit-card') {
+                const cardNumber = document.getElementById('card-number').value;
+                const expiryDate = document.getElementById('expiry-date').value;
+                const cvv = document.getElementById('cvv').value;
+
+                if (!cardNumber || !expiryDate || !cvv) {
+                    alert('Please fill in all Debit Card details.');
+                    return;
+                }
+
+                paymentDetails = `Card Number: ${cardNumber}\nExpiry Date: ${expiryDate}\nCVV: ${cvv}`;
+            } else if (paymentMethod === 'upi') {
+                const upiId = document.getElementById('upi-id').value;
+
+                if (!upiId) {
+                    alert('Please provide your UPI ID.');
+                    return;
+                }
+
+                paymentDetails = `UPI ID: ${upiId}`;
+            } else if (paymentMethod === 'cash') {
+                paymentDetails = 'Cash payment selected.';
+            } else {
+                alert('Please select a payment method.');
+                return;
+            }
+
+            // Alert for cash and redirect after confirmation
+            if (paymentMethod === 'cash') {
+                alert('You have selected Cash payment. Click OK to continue.');
+                window.location.href = 'thankyou.html'; // Redirect to Thank You page
+            } else {
+                // Confirm payment for Debit Card or UPI
+                const isConfirmed = confirm(`Are you sure you want to proceed with payment?\n\nPayment Method: ${paymentMethod}\nDetails: ${paymentDetails}`);
+
+                if (isConfirmed) {
+                    alert('Payment successful! Redirecting to Thank You page...');
+                    window.location.href = 'thankyou.html'; // Redirect to Thank You page
+                }
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
