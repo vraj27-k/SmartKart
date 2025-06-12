@@ -21,3 +21,13 @@ SmartKart is a sleek, user-friendly system built for efficient grocery managemen
 ![Dashboard](image/cartpage.png)
 - Track page
 ![Dashboard](image/trackpage.png)
+
+# 🛠️ Tech Stack
+
+- HTML5 – Structure of the web pages
+
+- CSS3 – Styling and layout
+
+- JavaScript (ES6) – Client-side interactivity and logic
+
+- Bootstrap 5  – Responsive components and UI
