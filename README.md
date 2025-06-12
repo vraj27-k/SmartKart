@@ -13,3 +13,4 @@ SmartKart is a sleek, user-friendly system built for efficient grocery managemen
 - 💻 Clean UI – Built with HTML, CSS, and JavaScript for a smooth experience.
 
 # 📷 Screenshots
+![Dashboard](image/homepage.png)
