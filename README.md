@@ -15,3 +15,9 @@ SmartKart is a sleek, user-friendly system built for efficient grocery managemen
 # 📷 Screenshots
 - Home page
 ![Dashboard](image/homepage.png)
+- Product page
+![Dashboard](image/productpage.png)
+- Cart page
+![Dashboard](image/cartpage.png)
+- Track page
+![Dashboard](image/trackpage.png)
